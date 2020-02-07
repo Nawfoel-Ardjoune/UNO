@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<assert.h>
+#include<math.h>
 
 struct Carte{
 	int num;
@@ -11,9 +12,7 @@ struct Carte{
 typedef struct Carte carte_t;
 /* 	colors : 0->rouge ; 1->bleu ; 2->vert ; 3->jaune. 
 	types :	0->simple ; 1->draw 2 ; 2->reverse ; 3->skip, 4->draw 4, 5->joker.
-*/		 
-static carte_t *ptab[1024];
-static int pp=0;
+*/
 
 struct Pile {
 	int top;
@@ -27,6 +26,11 @@ struct Player{
 	pile_t* hand;
 };
 typedef struct Player player_t;
+
+static player_t joueurs[10];
+static int nbjoueurs = 0;		 
+static carte_t *ptab[1024];
+static int pp=0;
 
 void push(pile_t* pile, carte_t carte) {
 	if(pile->top>0){
@@ -57,7 +61,14 @@ void reset(void){
 	}
 	printf("Done \n");
 }
-
+void distribution(void){
+	int i = j =0;
+	for(i=0;i<nbjoueurs;i++){
+		for(j=0;i<7;j++){
+			push(joueurs[i].hand, )
+		}
+	}
+}
 void affiche_carte(carte_t *carte){
 	if(carte->type==0 && carte->color==0 ){
 			printf("Rouge : %d\n",carte->num);
@@ -157,7 +168,10 @@ void init(pile_t* pile){
 
 
 int main(){
-	player_t 
+	player_t j1;
+	player_t j2;
+	player_t j3;
+	player_t j4;
 	// int * pts;
 	// pts = malloc(sizeof(int));
 	// int r = 100;
