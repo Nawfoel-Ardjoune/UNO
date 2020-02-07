@@ -3,6 +3,13 @@
 #include<assert.h>
 #include<math.h>
 
+/*===================================TO DO================================
+	-Il faut changer les structure de ma pile pour pouvoir y retirer des element sans laisser de trou.
+	-Il faut encore pouvoir faire le vrais main "Jouer" une fonction qui tente de produire un jeu de A a Z.
+	-Il faudra donc changer les fonctions qui dependent des changement fait precedement.
+	-Oubliez pas de faire des test avant vos push et de liberer la mémoire (free).
+==========================================================================*/
+
 struct Carte{
 	int num;
 	int type;
@@ -80,6 +87,7 @@ void distribution(pile_t* pioche){
 		for(j=0;i<7;j++){
 			int num = rand() %pioche->top;
 			push(joueurs[i].hand, pioche->tab[num]);
+			free()
 		}
 	}
 }
@@ -183,10 +191,7 @@ void init(pile_t* pile){
 
 
 int main(){
-	player_t j1;
-	player_t j2;
-	player_t j3;
-	player_t j4;
+	newPlayer();
 	// int * pts;
 	// pts = malloc(sizeof(int));
 	// int r = 100;
@@ -195,6 +200,7 @@ int main(){
 	pile_t test;
 	init(&test);
 	affiche(&test);
+	distribution(&test);
 	// carte_t titi;
 	// titi.type = 0;
 	// titi.value = 100;
