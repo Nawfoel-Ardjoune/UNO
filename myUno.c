@@ -22,6 +22,7 @@ struct Pile {
 typedef struct Pile pile_t;
 
 struct Player{
+	int num_joueurs;
 	int points;
 	pile_t* hand;
 };
@@ -61,14 +62,28 @@ void reset(void){
 	}
 	printf("Done \n");
 }
-void distribution(void){
-	int i = j =0;
+
+void newPlayer(void){
+	int i=0;
+	printf("Combien y'a t-il de joueurs ?");
+	scanf("%d", &nbjoueurs);
+	for(i=0; i<nbjoueurs; i++){
+		player_t tmp;
+		joueurs[i]=tmp;
+	}
+}
+
+void distribution(pile_t* pioche){
+	int i =0;
+	int j =0;
 	for(i=0;i<nbjoueurs;i++){
 		for(j=0;i<7;j++){
-			push(joueurs[i].hand, )
+			int num = rand() %pioche->top;
+			push(joueurs[i].hand, pioche->tab[num]);
 		}
 	}
 }
+
 void affiche_carte(carte_t *carte){
 	if(carte->type==0 && carte->color==0 ){
 			printf("Rouge : %d\n",carte->num);
