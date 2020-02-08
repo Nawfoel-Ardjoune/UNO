@@ -15,80 +15,43 @@ struct Carte{
 	int type;
 	int color;
 	int value;
-};
-typedef struct Carte carte_t;
+};typedef struct Carte carte_t;
 /* 	colors : 0->rouge ; 1->bleu ; 2->vert ; 3->jaune. 
 	types :	0->simple ; 1->draw 2 ; 2->reverse ; 3->skip, 4->draw 4, 5->joker.
 */
 
-struct Pile {
-	int top;
-	//Carte_t* carte = NULL;
-	carte_t * tab;
-};
-typedef struct Pile pile_t;
+struct node{
+	carte_t carte;
+	struct node* next;
+};typedef struct node node_t;
 
 struct Player{
 	int num_joueurs;
 	int points;
-	pile_t* hand;
-};
-typedef struct Player player_t;
+	node_t main;
+	int top;
+};typedef struct Player player_t;
 
-static player_t joueurs[10];
-static int nbjoueurs = 0;		 
-static carte_t *ptab[1024];
-static int pp=0;
+static carte_t pioche[108];
+static carte_t defausse[108];
+static int top_pioche = -1;
+static int top_defausse = -1;
+// void newPlayer(void){
+// 	int i=0;
+// 	printf("Combien y'a t-il de joueurs ?");
+// 	scanf("%d", &nbjoueurs);
+// 	for(i=0; i<nbjoueurs; i++){
+// 		player_t tmp;
+// 		joueurs[i]=tmp;
+// 	}
+// }
 
-void push(pile_t* pile, carte_t carte) {
-	if(pile->top>0){
-		pile->tab = realloc(pile->tab, pile->top * sizeof(carte) + sizeof(carte));
-		assert(pile->tab);
-	}else{
-		pile->tab = malloc(sizeof(carte));
-		assert(pile->tab);
-	}
-	pile->tab[pile->top++]=carte;
-	ptab[++pp]=&pile->tab[pile->top];
-	pile->top++;
-}
 
-carte_t pop(pile_t* pile) {
-	return pile->tab[pile->top--];
-}
-
-int vide(pile_t* pile) {
-	return (pile->top < 0);
-}
-
-void reset(void){
-	int i =0;
-	for(i=0;i<=pp;i++){
-		ptab[i]=NULL;
-		printf(".");
-	}
-	printf("Done \n");
-}
-
-void newPlayer(void){
-	int i=0;
-	printf("Combien y'a t-il de joueurs ?");
-	scanf("%d", &nbjoueurs);
-	for(i=0; i<nbjoueurs; i++){
-		player_t tmp;
-		joueurs[i]=tmp;
-	}
-}
-
-void distribution(pile_t* pioche){
-	int i =0;
-	int j =0;
-	for(i=0;i<nbjoueurs;i++){
-		for(j=0;i<7;j++){
-			int num = rand() %pioche->top;
-			push(joueurs[i].hand, pioche->tab[num]);
-			free()
-		}
+carte_t remove_from_player(player_t player, int indice){
+	int i;
+	if(indice != ) 
+	for(i=indice;i<player.top;i++){
+		player.hand[i]=player.hand[i+1];
 	}
 }
 
@@ -191,26 +154,6 @@ void init(pile_t* pile){
 
 
 int main(){
-	newPlayer();
-	// int * pts;
-	// pts = malloc(sizeof(int));
-	// int r = 100;
-	// pts = &r;
-	// printf("%d, %p",*pts,pts);
-	pile_t test;
-	init(&test);
-	affiche(&test);
-	distribution(&test);
-	// carte_t titi;
-	// titi.type = 0;
-	// titi.value = 100;
-	// titi.color = 0;
-	// titi.num = 3;
-	// affiche_carte(&titi);
-	//pop()
-	//free(test.tab);
-	//free(pts);
-	//printf("%d, %p",*pts,pts);
-	atexit(reset);
+	
 	return 0;
 }
