@@ -22,25 +22,60 @@ struct node{
 };typedef struct node node_t;
 
 struct Player{
-	int num_joueurs;
+	int num_player;
 	int points;
-	node_t main;
-	int top;
+	node_t * main;
+	int nbcarte;
 };typedef struct Player player_t;
 
 static carte_t pioche[108];
 static carte_t defausse[108];
-static int top_pioche = -1;
-static int top_defausse = -1;
-// void newPlayer(void){
-// 	int i=0;
-// 	printf("Combien y'a t-il de joueurs ?");
-// 	scanf("%d", &nbjoueurs);
-// 	for(i=0; i<nbjoueurs; i++){
-// 		player_t tmp;
-// 		joueurs[i]=tmp;
-// 	}
-// }
+static int top_pioche = 0;
+static int top_defausse = 0;
+static int indice;
+
+int set_nbPlayer(void){
+	int nbjoueurs;
+	int good=0;
+	do{
+		printf("Combien y'a t-il de joueurs ?\n");
+		scanf("%d", &nbjoueurs);
+		if(nbjoueurs<11 && nbjoueurs>1){	
+			good = 1;
+		}else{
+			printf("Il y a eu une erreur\n");
+			good=0;
+		}
+	}while(good!=1);
+	return nbjoueurs;
+}
+
+node_t * distribution(node_t * main){
+	int num = srand();
+	int i=0;
+	for(i=0;i<7;i++){
+		num = rand() % top_pioche;
+		add_node(main,pioche[top_pioche]);
+	}
+	return main;
+}
+
+player_t * new_player(void){
+	player_t *new =malloc(1*sizeof(new));
+	assert(new);
+	new->num_player=indice;
+	indice++;
+	distribution(new->main);
+	return new;
+}
+
+player_t * new_roster(player_t roster[],int nbj){
+	int i;
+	for(i=0;i<nbj;i++){
+		roster[i] = *new_player();
+	}
+	return roster;
+}
 
 node_t * new_node(int color, int type, int num, int value){
 	node_t *n =malloc(1*sizeof*n);
@@ -58,36 +93,29 @@ void add_node(node_t * first, node_t * n){
 	first->next = n;
 }
 
-node_t * delete(node_t *liste){
-	if(liste == NULL){ 
-        return NULL;
+void delete(node_t *here){
+	if(here == NULL){ 
+        exit(0);
     } 
-    if (liste->next == NULL) { 
-        free(liste); 
-        return NULL; 
+    if (here->next == NULL) { 
+        free(here);  
     }else{
-        node_t *todelete = liste->next;
-        liste->next = liste->next->next;
+        node_t *todelete = here->next;
+        here->next = here->next->next;
         free(todelete);
     }
 }
 
-node_t * deleteall(node_t *liste){
-	if (liste == NULL){ 
-        return NULL;
-    } 
-    if (liste->next == NULL){ 
-        free(liste); 
-        return NULL; 
-    } 
-	while(liste->next !=NULL ){
-		node_t *todelete = liste;
-        liste = liste->next;
-        free(todelete);
+void deleteall(node_t *liste){
+	node_t * next;
+	while(liste->next !=NULL){
+		next=liste->next;
+		liste->next=liste->next->next;
+		free(next);
         printf(".");
 	}
+	free(liste->next);
 	printf(" Done");
-	return NULL;
 }
 
 int my_equal(carte_t a, carte_t b){
@@ -98,11 +126,11 @@ int my_equal(carte_t a, carte_t b){
 	}
 }
 
-node_t* delete_one(node_t *liste, carte_t carte) { 
-    if (liste == NULL){ 
+node_t * delete_one(node_t *liste, carte_t carte) { 
+    if(liste == NULL){ 
         return NULL; 
     }
-    if (liste->next == NULL){ 
+    if(liste->next == NULL){ 
         free(liste); 
         return NULL; 
     } 
@@ -125,21 +153,21 @@ node_t* delete_one(node_t *liste, carte_t carte) {
     return liste;
 } 
 
-// node_t* delete_one(node_t * liste, carte_t *carte){
-// 	if(liste->next == NULL){
-// 		exit(EXIT_FAILLURE);
-// 	}else{
-// 		node_t *todelete = liste->next;
-// 		while(todelete->next !=NULL ){
-// 			todelete->next = todelete->next->next;
-// 			if(my_equal(todelete->carte,carte)){
-// 				detele
-// 			}
-// 		}
-// 	}
-// 	return liste;
-// }
-
+node_t * transit(node_t * from, node_t * to, carte_t carte){
+	if(from == NULL){
+		printf("Il n'y à pas de carte\n");
+		exit(1);
+	}
+	node_t *cursor = from;
+	while(cursor->next !=NULL){
+		if(my_equal(cursor->next->carte, carte)){
+			add_node(to,cursor->next);
+			delete(cursor);
+		}
+		cursor=cursor->next;
+	}
+	return from;
+}
 
 void affiche_carte(carte_t *carte){
 	if(carte->type==0 && carte->color==0 ){
@@ -200,44 +228,59 @@ void init(node_t* pile){
 				add_node(pile, new_node(i,n,0,20));
 			}
 		}
-		add_node(pile, new_node(i,5,0,50));
-		add_node(pile, new_node(i,4,0,50));
+		add_node(pile, new_node(0,5,0,50));
+		add_node(pile, new_node(0,4,0,50));
 	}
 }
 
 void affich_node(node_t * liste){
-	if (liste == NULL){
-		exit(EXIT_FAILURE);
-	}
 	node_t *me = liste->next;
 
-	while(me != NULL){
+	while(me->next != NULL){
 		affiche_carte(&me->carte);
 		me = me->next;
 	}
+	affiche_carte(&me->carte);
 }
 
+void affich_pioche(){
+	int i=0;
+	for(i=0;i<108;i++){
+		affiche_carte(&pioche[i]);
+	}
+}
+
+void mise_pioche(node_t *liste){
+	node_t * cursor=NULL;
+	cursor=liste->next;
+	while(cursor->next!=NULL){
+		pioche[top_pioche]=cursor->carte;
+		cursor=cursor->next;
+		top_pioche++;
+	}
+}
 
 int main(){
 	node_t * first;
-	node_t * test =new_node(0,0,0,20);
-	// //printf("num=%d, color=%d, type=%d, value%d\n",test->carte.num,test->carte.color,test->carte.type,test->carte.value);
+	first->next =NULL;
+	// node_t * test =new_node(0,0,2,20);
+	// printf("num=%d, color=%d, type=%d, value%d\n",test->carte.num,test->carte.color,test->carte.type,test->carte.value);
 	// test->carte.num=1;
 	// test->carte.color=2;
 	// test->carte.type=3;
 	// test->carte.value=100;
 	// test->next=NULL;
 	// first->next=test;
-	add_node(first,new_node(0,0,0,10));
-	add_node(first,new_node(0,0,0,20));
-	add_node(first,new_node(0,0,0,30));
-	//init(first);
-	//affich_node(first);
-	//delete_one(first, test->carte);
-	affich_node(first);
+	// add_node(first,new_node(0,0,1,10));
+	// add_node(first,new_node(0,0,2,20));
+	// add_node(first,new_node(0,0,3,30));
+	init(first);
+	mise_pioche(first);
+	// affich_node(first);
+	// delete_one(first, test->carte);
+	affich_pioche();
 	deleteall(first);
-	//printf("num=%d, color=%d, type=%d, value%d\n",test->carte.num,test->carte.color,test->carte.type,test->carte.value);
-	// free(first->next);
-	//free(first);
+	top_pioche=0;
+	// reset();
 	return 0;
 }
