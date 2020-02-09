@@ -4,10 +4,6 @@
 #include<math.h>
 
 /*===================================TO DO================================
-	-Il faut changer les structure de ma pile pour pouvoir y retirer des element sans laisser de trou.
-	-Il faut encore pouvoir faire le vrais main "Jouer" une fonction qui tente de produire un jeu de A a Z.
-	-Il faudra donc changer les fonctions qui dependent des changement fait precedement.
-	-Oubliez pas de faire des test avant vos push et de liberer la mémoire (free).
 ==========================================================================*/
 
 struct Carte{
@@ -46,14 +42,51 @@ static int top_defausse = -1;
 // 	}
 // }
 
-
-carte_t remove_from_player(player_t player, int indice){
-	int i;
-	if(indice != ) 
-	for(i=indice;i<player.top;i++){
-		player.hand[i]=player.hand[i+1];
-	}
+node_t * new_node(int color, int type, int num, int value){
+	node_t *n =malloc(1*sizeof*n);
+	assert(n);
+	n->carte.value=value;
+	n->carte.type=type;
+	n->carte.num=num;
+	n->carte.color=color;
+	n->next=NULL;
+	return n;
 }
+
+void add_node(node_t * first, node_t * n){
+	n->next = first->next;
+	first->next = n;
+}
+
+void delete(node_t *liste)
+{
+    if (liste->next == NULL)
+    {
+        exit(EXIT_FAILURE);
+    }else{
+        node_t *todelete = liste->next;
+        liste->next = liste->next->next;
+        free(todelete);
+    }
+}
+
+void deleteall(node_t *liste){
+	node_t * me = liste->next;
+	while(liste->next !=NULL ){
+		node_t *todelete = liste->next;
+        liste->next = liste->next->next;
+        free(todelete);
+        printf(".");
+	}
+	printf(" Done");
+}
+// carte_t remove_from_player(player_t player, int indice){
+// 	int i;
+// 	if(indice != ) 
+// 	for(i=indice;i<player.top;i++){
+// 		player.hand[i]=player.hand[i+1];
+// 	}
+//}
 
 void affiche_carte(carte_t *carte){
 	if(carte->type==0 && carte->color==0 ){
@@ -98,62 +131,58 @@ void affiche_carte(carte_t *carte){
 		}else if(carte->type==5){
 			printf("Carte : Joker\n");
 		}
-}
+}	
 
-void affiche(pile_t* pile){
-	int i=0;
-	for (i=0; i<pile->top; i++){//les carte simple
-		affiche_carte(&pile->tab[i]);
-	}
-	//printf("||%d||",i);	
-}		
-
-void init(pile_t* pile){
+void init(node_t* pile){
 	int i,j,k,l,m,n;
 	for(i=0;i<4;i++){
-		carte_t zero;
-		zero.num =0;
-		zero.type=0;
-		zero.value=20;
-		zero.color=i;
-		push(pile, zero);
+		add_node(pile,new_node(i,0,0,20));
 		for(j=1;j<10;j++){
 			for(k=0;k<2;k++){
-				carte_t carte;
-				carte.num=j;
-				carte.type=0;
-				carte.value=20;
-				carte.color=i;
-				push(pile, carte);
+				add_node(pile, new_node(i,0,j,20));
 			}
 		}
 		for(n=1;n<4;n++){
 			for(m=0;m<2;m++){
-				carte_t super;
-				super.num=0;
-				super.type=n;
-				super.value=20;
-				super.color=i;
-				push(pile, super);
+				add_node(pile, new_node(i,n,0,20));
 			}
 		}
-		carte_t joker;
-		joker.num =0;
-		joker.type=5;
-		joker.value=50;
-		joker.color=i;
-		push(pile, joker);
-		carte_t draw;
-		draw.num =0;
-		draw.type=4;
-		draw.value=50;
-		draw.color=i;
-		push(pile, draw);
+		add_node(pile, new_node(i,5,0,50));
+		add_node(pile, new_node(i,4,0,50));
+	}
+}
+
+void affich_node(node_t * liste){
+	if (liste->next == NULL){
+		exit(EXIT_FAILURE);
+	}
+	node_t *me = liste->next;
+
+	while(me != NULL){
+		affiche_carte(&me->carte);
+		me = me->next;
 	}
 }
 
 
 int main(){
-	
+	node_t * first;
+	// node_t * test =new_node(0,0,0,0);
+	// //printf("num=%d, color=%d, type=%d, value%d\n",test->carte.num,test->carte.color,test->carte.type,test->carte.value);
+	// test->carte.num=1;
+	// test->carte.color=2;
+	// test->carte.type=3;
+	// test->carte.value=100;
+	// test->next=NULL;
+	// // first->next=test;
+	// add_node(first,new_node(0,0,0,10));
+	// add_node(first,new_node(0,0,0,20));
+	// add_node(first,new_node(0,0,0,30));
+	init(first);
+	//affich_node(first);
+	deleteall(first);
+	//printf("num=%d, color=%d, type=%d, value%d\n",test->carte.num,test->carte.color,test->carte.type,test->carte.value);
+	// free(first->next);
+	//free(first);
 	return 0;
 }
