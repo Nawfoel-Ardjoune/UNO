@@ -58,11 +58,13 @@ void add_node(node_t * first, node_t * n){
 	first->next = n;
 }
 
-void delete(node_t *liste)
-{
-    if (liste->next == NULL)
-    {
-        exit(EXIT_FAILURE);
+node_t * delete(node_t *liste){
+	if(liste == NULL){ 
+        return NULL;
+    } 
+    if (liste->next == NULL) { 
+        free(liste); 
+        return NULL; 
     }else{
         node_t *todelete = liste->next;
         liste->next = liste->next->next;
@@ -70,23 +72,74 @@ void delete(node_t *liste)
     }
 }
 
-void deleteall(node_t *liste){
-	node_t * me = liste->next;
+node_t * deleteall(node_t *liste){
+	if (liste == NULL){ 
+        return NULL;
+    } 
+    if (liste->next == NULL){ 
+        free(liste); 
+        return NULL; 
+    } 
 	while(liste->next !=NULL ){
-		node_t *todelete = liste->next;
-        liste->next = liste->next->next;
+		node_t *todelete = liste;
+        liste = liste->next;
         free(todelete);
         printf(".");
 	}
 	printf(" Done");
+	return NULL;
 }
-// carte_t remove_from_player(player_t player, int indice){
-// 	int i;
-// 	if(indice != ) 
-// 	for(i=indice;i<player.top;i++){
-// 		player.hand[i]=player.hand[i+1];
+
+int my_equal(carte_t a, carte_t b){
+	if(a.type == b.type && a.num == b.num && a.color == b.color){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+node_t* delete_one(node_t *liste, carte_t carte) { 
+    if (liste == NULL){ 
+        return NULL; 
+    }
+    if (liste->next == NULL){ 
+        free(liste); 
+        return NULL; 
+    } 
+  
+    node_t *slow_ptr = liste; 
+    node_t *fast_ptr = liste; 
+  
+    node_t *prev;
+    while (fast_ptr != NULL && fast_ptr->next != NULL) 
+    { 
+        fast_ptr = fast_ptr->next->next; 
+        prev = slow_ptr; 
+        slow_ptr = slow_ptr->next;
+        if(my_equal(slow_ptr->carte,carte)){
+    		prev->next = slow_ptr->next; 
+   	 		free(slow_ptr); 
+  			return liste;    	
+        } 
+    } 
+    return liste;
+} 
+
+// node_t* delete_one(node_t * liste, carte_t *carte){
+// 	if(liste->next == NULL){
+// 		exit(EXIT_FAILLURE);
+// 	}else{
+// 		node_t *todelete = liste->next;
+// 		while(todelete->next !=NULL ){
+// 			todelete->next = todelete->next->next;
+// 			if(my_equal(todelete->carte,carte)){
+// 				detele
+// 			}
+// 		}
 // 	}
-//}
+// 	return liste;
+// }
+
 
 void affiche_carte(carte_t *carte){
 	if(carte->type==0 && carte->color==0 ){
@@ -153,7 +206,7 @@ void init(node_t* pile){
 }
 
 void affich_node(node_t * liste){
-	if (liste->next == NULL){
+	if (liste == NULL){
 		exit(EXIT_FAILURE);
 	}
 	node_t *me = liste->next;
@@ -167,19 +220,21 @@ void affich_node(node_t * liste){
 
 int main(){
 	node_t * first;
-	// node_t * test =new_node(0,0,0,0);
+	node_t * test =new_node(0,0,0,20);
 	// //printf("num=%d, color=%d, type=%d, value%d\n",test->carte.num,test->carte.color,test->carte.type,test->carte.value);
 	// test->carte.num=1;
 	// test->carte.color=2;
 	// test->carte.type=3;
 	// test->carte.value=100;
 	// test->next=NULL;
-	// // first->next=test;
-	// add_node(first,new_node(0,0,0,10));
-	// add_node(first,new_node(0,0,0,20));
-	// add_node(first,new_node(0,0,0,30));
-	init(first);
+	// first->next=test;
+	add_node(first,new_node(0,0,0,10));
+	add_node(first,new_node(0,0,0,20));
+	add_node(first,new_node(0,0,0,30));
+	//init(first);
 	//affich_node(first);
+	//delete_one(first, test->carte);
+	affich_node(first);
 	deleteall(first);
 	//printf("num=%d, color=%d, type=%d, value%d\n",test->carte.num,test->carte.color,test->carte.type,test->carte.value);
 	// free(first->next);
