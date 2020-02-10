@@ -34,6 +34,10 @@ static int top_pioche = 0;
 static int top_defausse = 0;
 static int indice;
 
+
+//node_t * distribution(node_t * main);
+void add_node(node_t * first, node_t * n);
+
 int set_nbPlayer(void){
 	int nbjoueurs;
 	int good=0;
@@ -50,22 +54,12 @@ int set_nbPlayer(void){
 	return nbjoueurs;
 }
 
-node_t * distribution(node_t * main){
-	int num = srand();
-	int i=0;
-	for(i=0;i<7;i++){
-		num = rand() % top_pioche;
-		add_node(main,pioche[top_pioche]);
-	}
-	return main;
-}
-
 player_t * new_player(void){
 	player_t *new =malloc(1*sizeof(new));
 	assert(new);
 	new->num_player=indice;
 	indice++;
-	distribution(new->main);
+	//distribution(new->main);
 	return new;
 }
 
@@ -92,6 +86,17 @@ void add_node(node_t * first, node_t * n){
 	n->next = first->next;
 	first->next = n;
 }
+
+// node_t * distribution(node_t * main){
+// 	int num = rand();
+// 	int i=0;
+// 	for(i=0;i<7;i++){
+// 		num = rand() % top_pioche;
+// 		add_node(main,&pioche[top_pioche]);
+// 	}
+// 	return main;
+// }
+
 
 void delete(node_t *here){
 	if(here == NULL){ 
