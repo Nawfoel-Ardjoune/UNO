@@ -1,4 +1,5 @@
 #include"un.h"
+
 player_t new_player(int num_player){
 	player_t new;
 	new.num_player=num_player;
@@ -80,7 +81,7 @@ void affiche_carte(carte_t carte){
 	}else if(carte.type==0 && carte.color==3 ){
 		printf("Jaune : %d\n",carte.num);
 	}
-//les draw +2
+// les draw +2
 	else if(carte.type==1 && carte.color==0 ){
 		printf("Rouge : pioche +2\n");
 	}else if(carte.type==1 && carte.color==1 ){
@@ -89,7 +90,7 @@ void affiche_carte(carte_t carte){
 		printf("Vert : pioche +2\n");
 	}else if(carte.type==1 && carte.color==3 ){
 		printf("Jaune : pioche +2\n");
-//Les reverse
+// Les reverse
 	}else if(carte.type==2 && carte.color==0 ){
 		printf("Rouge : reverse\n");
 	}else if(carte.type==2 && carte.color==1 ){
@@ -98,7 +99,7 @@ void affiche_carte(carte_t carte){
 		printf("Vert : reverse\n");
 	}else if(carte.type==2 && carte.color==3 ){
 		printf("Jaune : reverse\n");
-//Les skip
+// Les skip
 	}else if(carte.type==3 && carte.color==0 ){
 		printf("Rouge : skip\n");
 	}else if(carte.type==3 && carte.color==1 ){
@@ -107,7 +108,7 @@ void affiche_carte(carte_t carte){
 		printf("Vert : skip\n");
 	}else if(carte.type==3 && carte.color==3 ){
 		printf("Jaune : skip\n");
-//les jokers et les draw +4	
+// les jokers et les draw +4	
 	}else if(carte.type==4){
 		printf("Carte : draw +4\n");
 	}else if(carte.type==5){
@@ -117,7 +118,7 @@ void affiche_carte(carte_t carte){
 
 void affiche_all(liste_t *liste){
 	int i =0;
-	for(i=0;i<liste->top;i++){
+	for(i=0;i<=liste->top;i++){
 		printf("%d: ",i);
 		affiche_carte(liste->array[i]);
 	}
@@ -225,7 +226,7 @@ void choix(player_t *player, liste_t * defausse){
 	int num;
 	do{
 		affiche_all(&player->main);
-		printf("Selectionnez votre carte : ");
+		printf("Selectionnez votre carte : \n");
 		scanf("%d",&num);
 	}while(!test(player->main.array[num],defausse->array[defausse->top]));
 	carte_t tmp;
@@ -260,6 +261,7 @@ void activation(liste_t *pioche, liste_t *defausse, lj_t *roster, int *indice , 
 }
 
 int main(){
+	srand(time(NULL));
 	lj_t roster;
 	liste_t pioche;
 	liste_t defausse;
@@ -270,11 +272,11 @@ int main(){
 	init(&pioche);
 	melange(&pioche,108);
 	melange(&pioche,108);
-	//affiche_all(&pioche);
+	affiche_all(&pioche);
 	distribution(&roster,&pioche);
 	push(&defausse,pop(&pioche));
 	activation(&pioche,&defausse,&roster,&i,&riv);
-	//printf("================================================\n");
+	printf("================================================\n");
 	do {
 		printf("======================================== Au tour du joueur %d ========================================\n",i);
 		if( verif(roster.roster[i], defausse)) {
@@ -302,6 +304,7 @@ int main(){
 		}
 	} while(!victoire);
 	printf("Victoire du joueurs %d",i);
+	atexit();
 	free(roster.roster);
 	roster.nb_joueurs = -1;
 	free(pioche.array);
