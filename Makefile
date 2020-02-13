@@ -1,12 +1,11 @@
 CC=gcc
-SRC= Uno.c Carte.c Joueur.c Pile.c 
-OBJ=$(SRC:.c=.o) 
+SRC= un.c
+OBJ=$(SRC:.c=.o)
 FLAGS=-Wall
 
-Uno.exe : $(OBJ) Uno.h
+Uno:    $(OBJ) un.h
 	$(CC) -o $@ $(OBJ)
-
-%.o: %.c
+%.o:	%.c
 	$(CC) -c $< $(CFLAGS)
 
 clean:
