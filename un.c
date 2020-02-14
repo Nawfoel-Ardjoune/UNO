@@ -39,36 +39,14 @@ void push(liste_t *liste, carte_t carte){
 		liste->array[liste->top]=carte;
 	}else if(liste->top>=0){
 		liste->top++;
-		liste->array = realloc(liste->array, (liste->top) * sizeof(carte));
+		liste->array = realloc(liste->array, (liste->top+1) * sizeof(carte));
 		assert(liste->array);
 		liste->array[liste->top]=carte;
 	}
 }
 
 carte_t pop(liste_t *liste){
-	printf(" start pop ");
-	carte_t tmp;
-	if(liste->top == 0){
-		tmp.color=liste->array[0].color;
-		tmp.type=liste->array[0].type;
-		tmp.num=liste->array[0].num;
-		tmp.value=liste->array[0].value;
-		liste->array = NULL;
-		liste->top--;
-	}else if(liste->top>0){
-		tmp.color=liste->array[liste->top].color;
-		tmp.type=liste->array[liste->top].type;
-		tmp.num=liste->array[liste->top].num;
-		tmp.value=liste->array[liste->top].value;
-		liste->array = realloc(liste->array, (liste->top - 1)*sizeof(tmp));
-		assert(liste->array);
-		liste->top--;
-	}else{
-		printf(" exit pop\n");
-		exit(1);
-	}
-	printf(" return pop\n");
-	return tmp;
+	return liste->array[liste->top--];
 } 
 
 void affiche_carte(carte_t carte){
@@ -158,16 +136,12 @@ void deleteall(liste_t *liste){
 	printf(" Done for cardes.\n");
 }
 
-void delete_roster(lj_t * roster){
-	while(roster->nb_joueurs>-1){
-		if(roster->nb_joueurs>0){
-			roster->roster = realloc(roster->roster, (roster->nb_joueurs - 1)*sizeof(roster->roster[0]));
-			assert(roster->roster);
-			roster->nb_joueurs--;
-		}else{
-			free(roster->roster);
-			roster->nb_joueurs--;
-		}
+void delete_roster(lj_t * liste_players){
+	int i = 0;
+	for(i=0;i<liste_players->nb_joueurs;i++)
+	{
+		free(liste_players->roster[i].main.array);
+		liste_players->nb_joueurs--;
 		printf("*");
 	}
 	printf(" Done for roster.\n");
@@ -188,16 +162,13 @@ void melange(liste_t * liste, int indice){
 }
 
 void distribution(lj_t * liste_player, liste_t * pioche){
-	printf(" start distrib ");
 	int i =0;
 	int j =0;
 	for(i=0;i<liste_player->nb_joueurs;i++){
 		for(j=0;j<7;j++){
-			printf(" boucle for distrib j ");
 			push(&liste_player->roster[i].main,pop(pioche));
 		}
 	}
-	printf(" end distrib\n");
 }
 
 int test(carte_t from,carte_t to ){
@@ -242,7 +213,7 @@ void activation(liste_t *pioche, liste_t *defausse, lj_t *roster, int *indice , 
 		push(&roster->roster[*indice+1].main,pop(pioche));
 		(*indice)++;
 	}else if(defausse->array[defausse->top].type == 2){
-		*riv = 1 ? 0 : 1; 
+		*riv == 1 ? 0 : 1; 
 	}else if(defausse->array[defausse->top].type == 3){
 		(*indice)++;
 	}else if(defausse->array[defausse->top].type == 4){
@@ -250,6 +221,10 @@ void activation(liste_t *pioche, liste_t *defausse, lj_t *roster, int *indice , 
 		push(&roster->roster[*indice+1].main,pop(pioche));
 		push(&roster->roster[*indice+1].main,pop(pioche));
 		push(&roster->roster[*indice+1].main,pop(pioche));
+		int new_color;
+		printf("choisir une couleur: 0->rouge; 1->bleu; 2->vert; 3->jaune\n");
+		scanf("%d\n",&new_color);
+		defausse->array[defausse->top].color= new_color;
 		(*indice)++;
 	}else if(defausse->array[defausse->top].type == 5){
 		int new_color;
@@ -258,6 +233,16 @@ void activation(liste_t *pioche, liste_t *defausse, lj_t *roster, int *indice , 
 		defausse->array[defausse->top].color= new_color;
 	}
 
+}
+
+void finish(liste_t * pioche, liste_t * defausse, lj_t * roster){
+	delete_roster(roster);
+	free(&roster->roster);
+	roster->nb_joueurs = -1;
+	free(&pioche->array);
+	pioche->top = -1;
+	free(&defausse);
+	defausse->top = -1;
 }
 
 int main(){
@@ -272,7 +257,7 @@ int main(){
 	init(&pioche);
 	melange(&pioche,108);
 	melange(&pioche,108);
-	affiche_all(&pioche);
+	//affiche_all(&pioche);
 	distribution(&roster,&pioche);
 	push(&defausse,pop(&pioche));
 	activation(&pioche,&defausse,&roster,&i,&riv);
@@ -293,21 +278,17 @@ int main(){
 		}
 		if(riv == 0){
 			i++;
-			if(i>roster.nb_joueurs-1){
-				i=0;
-			}
 		} else {
 			i--;
-			if(i<0){
-				i=roster.nb_joueurs-1;
-			}
+		}
+		if(i<0){
+			i=roster.nb_joueurs-1;
+		}
+		if(i>roster.nb_joueurs-1){
+			i=0;
 		}
 	} while(!victoire);
 	printf("Victoire du joueurs %d",i);
-	atexit();
-	free(roster.roster);
-	roster.nb_joueurs = -1;
-	free(pioche.array);
-	pioche.top = -1;
+	finish(&pioche,&defausse,&roster);
 	return 0;
 }
